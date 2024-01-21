@@ -9,9 +9,18 @@ datasource db {
 }
 
 model users {
-  user_id  Int     @id @default(autoincrement()) 
+  user_id  Int     @id @default(autoincrement())
   name     String  @db.VarChar(255)
   email    String  @unique @db.VarChar(255)
   phone    String? @db.VarChar(20)
   password String  @db.VarChar(255)
+}
+
+model products {
+  product_id   Int     @id @default(autoincrement())
+  name         String  @db.VarChar(255)
+  images       String? @db.VarChar(255)
+  availability Boolean
+  price        Decimal @db.Decimal(10, 2)
+  description  String?
 }

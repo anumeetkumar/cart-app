@@ -1,7 +1,17 @@
 const express = require("express");
 const { prisma } = require("./db");
 const app = express();
-app.use(express.json()); // Add this middleware to parse JSON in the request body
+const cors = require("cors");
+app.use(express.json());
+const corsOpts = {
+  origin: "*",
+
+  methods: ["GET", "POST"],
+
+  allowedHeaders: ["Content-Type"],
+};
+
+app.use(cors(corsOpts));
 
 app.get("/", async (req, res) => {
   console.info("login");
@@ -9,11 +19,23 @@ app.get("/", async (req, res) => {
 });
 
 app.post("/login", async (req, res) => {
-  const user = await prisma.users.findFirst({
-    where: { email: req.body.email },
-  });
-  console.info("login");
-  res.status(200).json({ status: true, msg: "Server running login" });
+  try {
+    const { password, email } = req.body;
+    const user = await prisma.users.findFirst({
+      where: { email: email },
+    });
+    if (user && user.password === password) {
+      res.status(201).json({
+        status: true,
+        message: "loginsuccessfully",
+        data: { name: user.name, id: user.user_id, email: user.email },
+      });
+    } else {
+      res.status(400).json({ message: "wrong creds" });
+    }
+  } catch (err) {
+    res.status(400).json({ msg: err });
+  }
 });
 
 app.post("/register", async (req, res) => {
@@ -36,7 +58,9 @@ app.post("/register", async (req, res) => {
           password,
         },
       });
-      res.json(newUser);
+      res
+        .status(201)
+        .json({ status: true, message: "User Created successfully" });
     }
   } catch (err) {
     console.info("err", err);
