@@ -1,6 +1,7 @@
 const express = require("express");
-const app = express();
 const { prisma } = require("./db");
+const app = express();
+app.use(express.json()); // Add this middleware to parse JSON in the request body
 
 app.get("/", async (req, res) => {
   console.info("login");
@@ -17,7 +18,7 @@ app.post("/login", async (req, res) => {
 
 app.post("/register", async (req, res) => {
   const { name, email, phone, password } = req.body;
-  if (!name || !email || !phone || !work || !password) {
+  if (!name || !email || !phone || !password) {
     res.status(422).json("fill all the fields");
   }
   try {
@@ -35,8 +36,11 @@ app.post("/register", async (req, res) => {
           password,
         },
       });
+      res.json(newUser);
     }
-  } catch (err) {}
+  } catch (err) {
+    console.info("err", err);
+  }
 });
 
 app.listen(5000, () => {
