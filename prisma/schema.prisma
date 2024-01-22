@@ -19,7 +19,7 @@ model users {
 model products {
   product_id   Int     @id @default(autoincrement())
   name         String  @db.VarChar(255)
-  images       String? @db.VarChar(255)
+  images        Json? 
   availability Boolean
   price        Decimal @db.Decimal(10, 2)
   description  String?
