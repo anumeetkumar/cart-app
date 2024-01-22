@@ -11,7 +11,7 @@ const corsOpts = {
   allowedHeaders: ["Content-Type"],
 };
 
-app.use(cors(corsOpts));
+app.use(cors());
 
 app.get("/", async (req, res) => {
   console.info("login");
