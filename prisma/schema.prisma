@@ -38,3 +38,13 @@ model todo {
   user_id Int?
   users   users?  @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
 }
+
+model blog {
+  blog_id    Int     @id @default(autoincrement())
+  title      String? @db.VarChar(255)
+  summary    String? @db.VarChar(255)
+  user_id    Int?
+  categories Json?   @db.Json
+  created_on String? @db.VarChar(255)
+  image      String?  @db.Text
+}

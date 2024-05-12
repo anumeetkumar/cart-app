@@ -146,6 +146,64 @@ app.get("/todo", async (req, res) => {
   }
 });
 
-app.listen(5000, () => {
-  console.log(`server is running at port 5000`);
+app.post("/add-blog", async (req, res) => {
+  const { user_id, title, summary, categories, created_on, image } = req.body;
+  if (!user_id || !title || !summary || !categories || !created_on) {
+    return res.status(422).json("fill all the fields111");
+  }
+  try {
+    const newBlog = await prisma.blog.create({
+      data: {
+        user_id,
+        title,
+        summary,
+        categories,
+        created_on,
+        image,
+      },
+    });
+    res
+      .status(201)
+      .json({ status: true, message: "Blog created successfully" });
+  } catch (err) {
+    console.info("err", err);
+    res.status(400).json({ status: true, message: "Something went wrnong" });
+  }
+});
+
+app.get("/blogs", async (req, res) => {
+  const { user_id } = req.body;
+
+  try {
+    console.log("req.body", req.body);
+    if (!user_id) {
+      const userTasks = await prisma.blog.findMany({
+        where: {
+          user_id: user_id,
+        },
+      });
+      return res.status(201).json({
+        status: true,
+        message: "Success",
+        data: userTasks,
+      });
+    }
+    const userTasks = await prisma.blog.findMany({
+      where: {
+        user_id: user_id,
+      },
+    });
+    res.status(201).json({
+      status: true,
+      message: "Success",
+      data: userTasks,
+    });
+  } catch (err) {
+    console.info("err", err);
+    res.status(400).json({ status: true, message: "Something went wrnong" });
+  }
+});
+
+app.listen(5001, () => {
+  console.log(`server is running at port 5001`);
 });
