@@ -2,9 +2,9 @@ const express = require("express");
 const { prisma } = require("./db");
 const app = express();
 const cors = require("cors");
-const puppeteer = require("puppeteer");
-const axios = require("axios");
-const fs = require("fs");
+// const puppeteer = require("puppeteer");
+// const axios = require("axios");
+// const fs = require("fs");
 // const FormData = require("form-data");
 app.use(express.json());
 const corsOpts = {
@@ -208,17 +208,17 @@ app.get("/blogs", async (req, res) => {
   }
 });
 
-async function generatePDF(url, outputPath) {
-  const browser = await puppeteer.launch({ headless: true });
-  const page = await browser.newPage();
+// async function generatePDF(url, outputPath) {
+//   const browser = await puppeteer.launch({ headless: true });
+//   const page = await browser.newPage();
 
-  await page.goto(url, {
-    waitUntil: "networkidle0",
-  });
-  await page.pdf({ path: outputPath, format: "A4", printBackground: true });
+//   await page.goto(url, {
+//     waitUntil: "networkidle0",
+//   });
+//   await page.pdf({ path: outputPath, format: "A4", printBackground: true });
 
-  await browser.close();
-}
+//   await browser.close();
+// }
 
 // app.post("/generate", async (req, res) => {
 //   const urlPath = req.body.url;
