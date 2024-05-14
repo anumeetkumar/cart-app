@@ -2,10 +2,10 @@ const express = require("express");
 const { prisma } = require("./db");
 const app = express();
 const cors = require("cors");
-const puppeteer = require("puppeteer");
-const axios = require("axios");
-const fs = require("fs");
-const FormData = require("form-data");
+// const puppeteer = require("puppeteer");
+// const axios = require("axios");
+// const fs = require("fs");
+// const FormData = require("form-data");
 app.use(express.json());
 const corsOpts = {
   origin: "*",
@@ -208,60 +208,67 @@ app.get("/blogs", async (req, res) => {
   }
 });
 
-async function generatePDF(url, outputPath) {
-  const browser = await puppeteer.launch({ headless: true });
-  const page = await browser.newPage();
+// async function generatePDF(url, outputPath) {
+//   const browser = await puppeteer.launch({ headless: true });
+//   const page = await browser.newPage();
 
-  await page.goto(url, {
-    waitUntil: "networkidle0",
-  });
-  await page.pdf({ path: outputPath, format: "A4", printBackground: true });
+//   await page.goto(url, {
+//     waitUntil: "networkidle0",
+//   });
+//   await page.pdf({ path: outputPath, format: "A4", printBackground: true });
 
-  await browser.close();
-}
+//   await browser.close();
+// }
 
-app.post("/generate", async (req, res) => {
-  const urlPath = req.body.url;
-  try {
-    const pdfFilePath = "public/google.pdf";
-    await generatePDF(
-      urlPath,
-      pdfFilePath
-    );
+// app.post("/generate", async (req, res) => {
+//   const urlPath = req.body.url;
+//   try {
+//     const pdfFilePath = "public/google.pdf";
 
-    const formData = new FormData();
-    const readstream = await fs.createReadStream(pdfFilePath);
-    formData.append("file", readstream);
-    const response = await axios.post(
-      `http://192.168.0.186:8000/api/v1/upload_file_s3`,
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
-    fs.unlink(pdfFilePath, (err) => {
-      if (err) {
-        console.error("Error deleting PDF file:", err);
-      } else {
-        console.log("PDF file deleted successfully");
-      }
-    });
-    res.status(201).json({
-      status: true,
-      message: "Success",
-      data: response.data,
-    });
-  } catch (error) {
-    console.error("Error generating or uploading PDF:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Error generating or uploading PDF",
-      error: error.message, 
-    });
-  }
-});
+//     // Generate PDF
+//     await generatePDF(
+//       // `http://192.168.0.84:3000/task-report/${id}`, // Replace with live url here
+//       urlPath,
+//       pdfFilePath
+//     );
+
+//     // Create FormData
+//     const formData = new FormData();
+//     // console.log("file+++",fs.createReadStream(pdfFilePath))
+//     formData.append("file", fs.createReadStream(pdfFilePath));
+
+//     // Send FormData using axios
+//     const response = await fetch("https://stg-apis.keylr.com/upload_file_s3", {
+//       method: "POST",
+//       body: formData,
+//       headers: {
+//         // Make sure to set the content type to multipart/form-data for file uploads
+//         "Content-Type": "multipart/form-data",
+//       },
+//     });
+//     // fs.unlink(pdfFilePath, (err) => {
+//     //   if (err) {
+//     //     console.error("Error deleting PDF file:", err);
+//     //   } else {
+//     //     console.log("PDF file deleted successfully");
+//     //   }
+//     // });
+//     const resp = await response.json();
+//     console.log("response", resp);
+//     return res.status(200).json({
+//       success: true,
+//       message: "File uploaded successfully",
+//       data: resp,
+//     });
+//   } catch (error) {
+//     console.error("Error generating or uploading PDF:", error);
+//     return res.status(500).json({
+//       success: false,
+//       message: "Error generating or uploading PDF",
+//       error: error.message, // Return the error message for debugging
+//     });
+//   }
+// });
 
 app.listen(5001, () => {
   console.log(`server is running at port 5001`);
