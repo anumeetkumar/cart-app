@@ -18,7 +18,6 @@ const corsOpts = {
 app.use(cors());
 
 app.get("/", async (req, res) => {
-  console.info("login");
   res.status(200).json({ status: true, msg: "Server running" });
 });
 
@@ -208,6 +207,39 @@ app.get("/blogs", async (req, res) => {
   }
 });
 
+app.post("/blogs", async (req, res) => {
+  const { user_id } = req.body;
+
+  try {
+    console.log("req.body", req.body);
+    if (!user_id) {
+      const userTasks = await prisma.blog.findMany({
+        where: {
+          user_id: user_id,
+        },
+      });
+      return res.status(201).json({
+        status: true,
+        message: "Success",
+        data: userTasks,
+      });
+    }
+    const userTasks = await prisma.blog.findMany({
+      where: {
+        user_id: user_id,
+      },
+    });
+    res.status(201).json({
+      status: true,
+      message: "Success",
+      data: userTasks,
+    });
+  } catch (err) {
+    console.info("err", err);
+    res.status(400).json({ status: true, message: "Something went wrnong" });
+  }
+});
+
 // async function generatePDF(url, outputPath) {
 //   const browser = await puppeteer.launch({ headless: true });
 //   const page = await browser.newPage();
@@ -270,6 +302,6 @@ app.get("/blogs", async (req, res) => {
 //   }
 // });
 
-app.listen(5001, () => {
+app.listen(5002, () => {
   console.log(`server is running at port 5001`);
 });
