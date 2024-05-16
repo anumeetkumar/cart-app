@@ -15,7 +15,7 @@ const corsOpts = {
   allowedHeaders: ["Content-Type"],
 };
 
-app.use(cors());
+app.use(cors(corsOpts));
 
 app.get("/", async (req, res) => {
   res.status(200).json({ status: true, msg: "Server running" });
@@ -126,7 +126,7 @@ app.post("/add-todo", async (req, res) => {
   }
 });
 
-app.get("/todo", async (req, res) => {
+app.post("/todo", async (req, res) => {
   const { user_id } = req.body;
   console.log("req.body", req.body);
   if (!user_id) {
