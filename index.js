@@ -2,10 +2,10 @@ const express = require("express");
 const { prisma } = require("./db");
 const app = express();
 const cors = require("cors");
-// const puppeteer = require("puppeteer");
-// const axios = require("axios");
-// const fs = require("fs");
-// const FormData = require("form-data");
+const multiparty = require("multiparty");
+const axios = require("axios");
+const fs = require("fs");
+const FormData = require("form-data");
 app.use(express.json());
 const corsOpts = {
   origin: "*",
@@ -150,28 +150,55 @@ app.post("/todo", async (req, res) => {
 });
 
 app.post("/add-blog", async (req, res) => {
-  const { user_id, title, summary, categories, created_on, image } = req.body;
-  if (!user_id || !title || !summary || !categories || !created_on) {
-    return res.status(422).json("fill all the fields111");
-  }
-  try {
-    const newBlog = await prisma.blog.create({
-      data: {
-        user_id,
-        title,
-        summary,
-        categories,
-        created_on,
-        image,
-      },
-    });
-    res
-      .status(201)
-      .json({ status: true, message: "Blog created successfully" });
-  } catch (err) {
-    console.info("err", err);
-    res.status(400).json({ status: true, message: "Something went wrnong" });
-  }
+  const form = new multiparty.Form();
+  form.parse(req, async (err, fields, files) => {
+    if (err) {
+      res.status(500).json({ error: "Error parsing form data" });
+      return;
+    }
+    try {
+      if (
+        !files.file ||
+        !Array.isArray(files.file) ||
+        files.file.length === 0
+      ) {
+        throw new Error("No file uploaded");
+      }
+
+      const fileName = new Date().getTime();
+      // Get the uploaded file object
+      const uploadedFile = files.file[0];
+      const formData = new FormData();
+      console.log("uploadedFile.path", uploadedFile.path);
+      const readstream = await fs.createReadStream(uploadedFile.path);
+      formData.append("file", readstream);
+      const response = await axios.post(
+        `https://stg-apis.keylr.com/api/v1/upload_file_s3`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      const newBlog = await prisma.blog.create({
+        data: {
+          user_id: Number(fields.user_id[0]),
+          title: fields.title[0],
+          summary: fields.summary[0],
+          categories: [fields.categories[0]],
+          created_on: fields.created_on[0],
+          image: response.data.data,
+        },
+      });
+      res
+        .status(201)
+        .json({ status: true, message: "Blog created successfully" });
+    } catch (err) {
+      console.log("err", err);
+      res.status(400).json({ status: true, message: "Something went wrnong" });
+    }
+  });
 });
 
 app.get("/blogs", async (req, res) => {
@@ -239,68 +266,6 @@ app.post("/blogs", async (req, res) => {
     res.status(400).json({ status: true, message: "Something went wrnong" });
   }
 });
-
-// async function generatePDF(url, outputPath) {
-//   const browser = await puppeteer.launch({ headless: true });
-//   const page = await browser.newPage();
-
-//   await page.goto(url, {
-//     waitUntil: "networkidle0",
-//   });
-//   await page.pdf({ path: outputPath, format: "A4", printBackground: true });
-
-//   await browser.close();
-// }
-
-// app.post("/generate", async (req, res) => {
-//   const urlPath = req.body.url;
-//   try {
-//     const pdfFilePath = "public/google.pdf";
-
-//     // Generate PDF
-//     await generatePDF(
-//       // `http://192.168.0.84:3000/task-report/${id}`, // Replace with live url here
-//       urlPath,
-//       pdfFilePath
-//     );
-
-//     // Create FormData
-//     const formData = new FormData();
-//     // console.log("file+++",fs.createReadStream(pdfFilePath))
-//     formData.append("file", fs.createReadStream(pdfFilePath));
-
-//     // Send FormData using axios
-//     const response = await fetch("https://stg-apis.keylr.com/upload_file_s3", {
-//       method: "POST",
-//       body: formData,
-//       headers: {
-//         // Make sure to set the content type to multipart/form-data for file uploads
-//         "Content-Type": "multipart/form-data",
-//       },
-//     });
-//     // fs.unlink(pdfFilePath, (err) => {
-//     //   if (err) {
-//     //     console.error("Error deleting PDF file:", err);
-//     //   } else {
-//     //     console.log("PDF file deleted successfully");
-//     //   }
-//     // });
-//     const resp = await response.json();
-//     console.log("response", resp);
-//     return res.status(200).json({
-//       success: true,
-//       message: "File uploaded successfully",
-//       data: resp,
-//     });
-//   } catch (error) {
-//     console.error("Error generating or uploading PDF:", error);
-//     return res.status(500).json({
-//       success: false,
-//       message: "Error generating or uploading PDF",
-//       error: error.message, // Return the error message for debugging
-//     });
-//   }
-// });
 
 app.listen(5002, () => {
   console.log(`server is running at port 5001`);
