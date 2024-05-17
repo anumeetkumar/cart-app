@@ -56,7 +56,6 @@ app.post("/addProduct", async (req, res) => {
         description,
       },
     });
-    console.log("newProduct", newProduct);
     res
       .status(201)
       .json({ status: true, message: "Product Created successfully" });
@@ -68,7 +67,6 @@ app.post("/addProduct", async (req, res) => {
 app.get("/getProducts", async (req, res) => {
   try {
     const allProducts = await prisma.products.findMany();
-    console.log("allProducts", allProducts);
     res.status(201).json({ status: true, data: allProducts });
   } catch (err) {
     res.status(400).json({ msg: err });
@@ -106,7 +104,6 @@ app.post("/register", async (req, res) => {
 
 app.post("/add-todo", async (req, res) => {
   const { user_id, title } = req.body;
-  console.log("req.body", req.body);
   if (!user_id || !title) {
     return res.status(422).json("fill all the fields111");
   }
@@ -128,7 +125,6 @@ app.post("/add-todo", async (req, res) => {
 
 app.post("/todo", async (req, res) => {
   const { user_id } = req.body;
-  console.log("req.body", req.body);
   if (!user_id) {
     return res.status(422).json("user id is required");
   }
@@ -169,7 +165,6 @@ app.post("/add-blog", async (req, res) => {
       // Get the uploaded file object
       const uploadedFile = files.file[0];
       const formData = new FormData();
-      console.log("uploadedFile.path", uploadedFile.path);
       const readstream = await fs.createReadStream(uploadedFile.path);
       formData.append("file", readstream);
       const response = await axios.post(
@@ -205,7 +200,6 @@ app.get("/blogs", async (req, res) => {
   const { user_id } = req.body;
 
   try {
-    console.log("req.body", req.body);
     if (!user_id) {
       const userTasks = await prisma.blog.findMany({
         where: {
@@ -236,9 +230,20 @@ app.get("/blogs", async (req, res) => {
 
 app.post("/blogs", async (req, res) => {
   const { user_id } = req.body;
-
+  const { id } = req.query;
   try {
-    console.log("req.body", req.body);
+    if (id) {
+      const blog = await prisma.blog.findMany({
+        where: {
+          blog_id: Number(id),
+        },
+      });
+      return res.status(201).json({
+        status: true,
+        message: "Success",
+        data: blog,
+      });
+    }
     if (!user_id) {
       const userTasks = await prisma.blog.findMany({
         where: {
@@ -251,6 +256,7 @@ app.post("/blogs", async (req, res) => {
         data: userTasks,
       });
     }
+
     const userTasks = await prisma.blog.findMany({
       where: {
         user_id: user_id,
@@ -267,6 +273,6 @@ app.post("/blogs", async (req, res) => {
   }
 });
 
-app.listen(5002, () => {
+app.listen(5000, () => {
   console.log(`server is running at port 5001`);
 });
