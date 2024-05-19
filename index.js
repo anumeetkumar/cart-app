@@ -198,30 +198,24 @@ app.post("/add-blog", async (req, res) => {
 
 app.get("/blogs", async (req, res) => {
   const { user_id } = req.body;
+  const { id } = req.query;
 
   try {
-    if (!user_id) {
-      const userTasks = await prisma.blog.findMany({
+    if (id) {
+      const blog = await prisma.blog.findMany({
         where: {
-          user_id: user_id,
+          blog_id: Number(id),
         },
       });
       return res.status(201).json({
         status: true,
-        message: "Success",
-        data: userTasks,
+        message: "Success ",
+        data: blog,
       });
     }
-    const userTasks = await prisma.blog.findMany({
-      where: {
-        user_id: user_id,
-      },
-    });
-    res.status(201).json({
-      status: true,
-      message: "Success",
-      data: userTasks,
-    });
+  else{
+    res.status(400).json({ status: true, message: "Enter id" });
+  }
   } catch (err) {
     console.info("err", err);
     res.status(400).json({ status: true, message: "Something went wrnong" });
@@ -240,7 +234,7 @@ app.post("/blogs", async (req, res) => {
       });
       return res.status(201).json({
         status: true,
-        message: "Success",
+        message: "Success ",
         data: blog,
       });
     }
