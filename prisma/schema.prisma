@@ -15,6 +15,7 @@ model users {
   phone    String? @db.VarChar(20)
   password String  @db.VarChar(255)
   todo     todo[]
+  image      String?  @db.Text
 }
 
 model products {
