@@ -181,7 +181,7 @@ app.post("/add-blog", async (req, res) => {
           user_id: Number(fields.user_id[0]),
           title: fields.title[0],
           summary: fields.summary[0],
-          categories: fields.categories[0],
+          categories: JSON.parse(fields.categories[0]),
           created_on: fields.created_on[0],
           image: response.data.data,
         },
@@ -212,19 +212,18 @@ app.get("/blogs", async (req, res) => {
         message: "Success ",
         data: blog,
       });
+    } else {
+      const userTasks = await prisma.blog.findMany({
+        where: {
+          user_id: user_id,
+        },
+      });
+      res.status(201).json({
+        status: true,
+        message: "Success",
+        data: userTasks,
+      });
     }
-  else{
-    const userTasks = await prisma.blog.findMany({
-      where: {
-        user_id: user_id,
-      },
-    });
-    res.status(201).json({
-      status: true,
-      message: "Success",
-      data: userTasks,
-    });
-  }
   } catch (err) {
     console.info("err", err);
     res.status(400).json({ status: true, message: "Something went wrnong" });
