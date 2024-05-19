@@ -214,7 +214,16 @@ app.get("/blogs", async (req, res) => {
       });
     }
   else{
-    res.status(400).json({ status: true, message: "Enter id" });
+    const userTasks = await prisma.blog.findMany({
+      where: {
+        user_id: user_id,
+      },
+    });
+    res.status(201).json({
+      status: true,
+      message: "Success",
+      data: userTasks,
+    });
   }
   } catch (err) {
     console.info("err", err);
