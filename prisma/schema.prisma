@@ -44,7 +44,7 @@ model todo {
 model blog {
   blog_id    Int     @id @default(autoincrement())
   title      String? @db.VarChar(255)
-  summary    String? @db.VarChar(255)
+  summary    String? @db.Text
   user_id    Int?
   categories Json?   @db.Json
   created_on String? @db.VarChar(255)

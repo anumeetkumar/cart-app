@@ -193,7 +193,7 @@ app.post("/add-blog", async (req, res) => {
         .json({ status: true, message: "Blog created successfully" });
     } catch (err) {
       console.log("err", err);
-      res.status(400).json({ status: true, message: "Something went wrnong" });
+      res.status(400).json({ status: false, message: "Something went wrnong" });
     }
   });
 });
