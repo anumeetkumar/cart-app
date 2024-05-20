@@ -301,6 +301,15 @@ app.post("/blogs", async (req, res) => {
       where: {
         user_id: user_id,
       },
+      include: {
+        users: {
+          select: {
+            name: true,
+            user_id: true,
+            email: true,
+          },
+        },
+      },
     });
     res.status(201).json({
       status: true,
