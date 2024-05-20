@@ -16,6 +16,7 @@ model users {
   password String  @db.VarChar(255)
   todo     todo[]
   image      String?  @db.Text
+  blog     blog[]
 }
 
 model products {
@@ -48,4 +49,5 @@ model blog {
   categories Json?   @db.Json
   created_on String? @db.VarChar(255)
   image      String?  @db.Text
+  users      users?  @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
 }

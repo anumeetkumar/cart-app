@@ -217,6 +217,13 @@ app.get("/blogs", async (req, res) => {
         where: {
           user_id: user_id,
         },
+        include: {
+          users: {
+            select: {
+              name: true,
+            },
+          },
+        },
       });
       res.status(201).json({
         status: true,
