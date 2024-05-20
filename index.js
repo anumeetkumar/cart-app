@@ -181,7 +181,6 @@ app.post("/add-blog", async (req, res) => {
           users: {
             connect: { user_id: Number(fields.user_id[0]) },
           },
-          // user_id: Number(fields.user_id[0]),
           title: fields.title[0],
           summary: fields.summary[0],
           categories: JSON.parse(fields.categories[0]),
@@ -214,6 +213,7 @@ app.get("/blogs", async (req, res) => {
             select: {
               name: true,
               user_id: true,
+              email: true,
             },
           },
         },
@@ -233,6 +233,7 @@ app.get("/blogs", async (req, res) => {
             select: {
               name: true,
               user_id: true,
+              email: true,
             },
           },
         },
@@ -263,6 +264,7 @@ app.post("/blogs", async (req, res) => {
             select: {
               name: true,
               user_id: true,
+              email: true,
             },
           },
         },
@@ -283,6 +285,7 @@ app.post("/blogs", async (req, res) => {
             select: {
               name: true,
               user_id: true,
+              email: true,
             },
           },
         },
