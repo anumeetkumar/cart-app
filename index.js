@@ -206,6 +206,13 @@ app.get("/blogs", async (req, res) => {
         where: {
           blog_id: Number(id),
         },
+        include: {
+          users: {
+            select: {
+              name: true,
+            },
+          },
+        },
       });
       return res.status(201).json({
         status: true,
@@ -246,6 +253,13 @@ app.post("/blogs", async (req, res) => {
         where: {
           blog_id: Number(id),
         },
+        include: {
+          users: {
+            select: {
+              name: true,
+            },
+          },
+        },
       });
       return res.status(201).json({
         status: true,
@@ -257,6 +271,13 @@ app.post("/blogs", async (req, res) => {
       const userTasks = await prisma.blog.findMany({
         where: {
           user_id: user_id,
+        },
+        include: {
+          users: {
+            select: {
+              name: true,
+            },
+          },
         },
       });
       return res.status(201).json({
