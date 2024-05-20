@@ -178,7 +178,10 @@ app.post("/add-blog", async (req, res) => {
       );
       const newBlog = await prisma.blog.create({
         data: {
-          user_id: Number(fields.user_id[0]),
+          users: {
+            connect: { user_id: Number(fields.user_id[0]) },
+          },
+          // user_id: Number(fields.user_id[0]),
           title: fields.title[0],
           summary: fields.summary[0],
           categories: JSON.parse(fields.categories[0]),
@@ -210,6 +213,7 @@ app.get("/blogs", async (req, res) => {
           users: {
             select: {
               name: true,
+              user_id: true,
             },
           },
         },
@@ -228,6 +232,7 @@ app.get("/blogs", async (req, res) => {
           users: {
             select: {
               name: true,
+              user_id: true,
             },
           },
         },
@@ -257,6 +262,7 @@ app.post("/blogs", async (req, res) => {
           users: {
             select: {
               name: true,
+              user_id: true,
             },
           },
         },
@@ -276,6 +282,7 @@ app.post("/blogs", async (req, res) => {
           users: {
             select: {
               name: true,
+              user_id: true,
             },
           },
         },
