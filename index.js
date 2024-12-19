@@ -8,6 +8,7 @@ const fs = require("fs");
 const FormData = require("form-data");
 app.use(express.json());
 const corsOpts = {
+
   origin: "*",
 
   methods: ["GET", "POST"],
